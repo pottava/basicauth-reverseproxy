@@ -1,0 +1,32 @@
+machine:
+  environment:
+    REPO_ROOT: "${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+  post:
+    - >
+      echo "export BUILD_VERSION=\"`git --git-dir=${CHECKOUT_PATH}/.git describe --always --dirty`\"" >> ~/.circlerc;
+      echo "export BUILD_DATE=\"`date +%FT%T%z`\"" >> ~/.circlerc;
+
+dependencies:
+  pre:
+    - go get -u github.com/golang/lint/golint
+
+checkout:
+  post:
+    - mkdir -p ${REPO_ROOT}
+    - cp -rf ${HOME}/${CIRCLE_PROJECT_REPONAME} ${HOME}/.go_workspace/src/${VCS}/${CIRCLE_PROJECT_USERNAME}/
+
+test:
+  override:
+    - cd ${REPO_ROOT} && for package in `go list ./...| grep -v vendor`; do golint ${package}; done
+    - cd ${REPO_ROOT} && test -z "$(gofmt -s -l . | tee /dev/stderr)"
+    - cd ${REPO_ROOT} && go vet ./...
+    - cd ${REPO_ROOT} && go test -race ./...
+
+deployment:
+  release:
+    branch: master
+    commands:
+      - go get github.com/mitchellh/gox
+      - go get github.com/tcnksm/ghr
+      - gox -ldflags "-X main.version $BUILD_VERSION -X main.date $BUILD_DATE" -output "dist/${CIRCLE_PROJECT_REPONAME}_{{.OS}}_{{.Arch}}"
+      - ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace `git describe --tags` dist/

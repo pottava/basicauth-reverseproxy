@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -8,6 +9,11 @@ import (
 	"os"
 
 	"github.com/justinas/alice"
+)
+
+var (
+	version string
+	date    string
 )
 
 func main() {
@@ -31,6 +37,7 @@ func main() {
 		r.URL.Scheme = proxyURL.Scheme
 	}
 	http.Handle("/", alice.New(wrapper).Then(proxy))
+	http.HandleFunc("/version", ver)
 
 	// Listen & Serve
 	port := "80"
@@ -64,4 +71,16 @@ func auth(r *http.Request, user, pass string) bool {
 		return username == user && password == pass
 	}
 	return false
+}
+
+func ver(w http.ResponseWriter, r *http.Request) {
+	if js, err := json.Marshal(struct {
+		Version string `json:"version"`
+		Date    string `json:"date"`
+	}{Version: version, Date: date}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 }
