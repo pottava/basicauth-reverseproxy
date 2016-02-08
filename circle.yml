@@ -1,6 +1,7 @@
 machine:
   environment:
     REPO_ROOT: "${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+    CHECKOUT_PATH: ${HOME}/${CIRCLE_PROJECT_REPONAME}
   post:
     - >
       echo "export BUILD_VERSION=\"`git --git-dir=${CHECKOUT_PATH}/.git describe --always --dirty`\"" >> ~/.circlerc;
@@ -13,7 +14,7 @@ dependencies:
 checkout:
   post:
     - mkdir -p ${REPO_ROOT}
-    - cp -rf ${HOME}/${CIRCLE_PROJECT_REPONAME} ${HOME}/.go_workspace/src/${VCS}/${CIRCLE_PROJECT_USERNAME}/
+    - cp -rf ${CHECKOUT_PATH} ${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME}/
 
 test:
   override:

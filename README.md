@@ -22,6 +22,9 @@ APP_PORT                  | The port number to be assigned for listening.     |
 
 `docker run -d -p 8080:80 -e PROXY_URL pottava/proxy`
 
+with basic auth:  
+`docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy`
+
 
 ## Copyright and license
 

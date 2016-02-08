@@ -21,3 +21,6 @@ APP_PORT           | このサービスが待機する `ポート番号` （デ�
 ### 2. アプリを起動します
 
 `docker run -d -p 8080:80 -e PROXY_URL pottava/proxy`
+
+Basic 認証をつけるなら:  
+`docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy`
