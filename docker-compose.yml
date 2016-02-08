@@ -1,0 +1,12 @@
+app:
+  build: .
+  entrypoint: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
+  ports:
+    - 80:80
+  volumes:
+    - ".:/go/src/github.com/pottava/basicauth-reverseproxy"
+  environment:
+    - BASIC_AUTH_USER
+    - BASIC_AUTH_PASS
+    - PROXY_URL
+  container_name: app
