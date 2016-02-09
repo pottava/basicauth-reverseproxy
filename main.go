@@ -60,10 +60,8 @@ func configFromEnvironmentVariables() *config {
 		port = "80"
 	}
 	accessLog := false
-	if candidate, found := os.LookupEnv("ACCESS_LOG"); found {
-		if b, err := strconv.ParseBool(candidate); err == nil {
-			accessLog = b
-		}
+	if b, err := strconv.ParseBool(os.Getenv("ACCESS_LOG")); err == nil {
+		accessLog = b
 	}
 	conf := &config{
 		proxyURL:      proxyURL,
