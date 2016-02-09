@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -11,52 +10,78 @@ import (
 	"github.com/justinas/alice"
 )
 
+type config struct {
+	proxyURL      *url.URL // PROXY_URL
+	basicAuthUser string   // BASIC_AUTH_USER
+	basicAuthPass string   // BASIC_AUTH_PASS
+	port          string   // APP_PORT
+	sslCert       string   // SSL_CERT_PATH
+	sslKey        string   // SSL_KEY_PATH
+}
+
 var (
 	version string
 	date    string
+	c       *config
 )
 
 func main() {
-
-	// Proxy settings
-	var proxyURL *url.URL
-	if env := os.Getenv("PROXY_URL"); len(env) == 0 {
-		log.Fatal("Missing required environment variables: PROXY_URL")
-	} else {
-		if parsed, err := url.Parse(env); err != nil {
-			log.Fatalf("Could not parse proxy URL: %s", env)
-		} else {
-			log.Printf("[config] Proxy to %v", parsed)
-			proxyURL = parsed
-		}
-	}
-	proxy := httputil.NewSingleHostReverseProxy(proxyURL)
+	c = configFromEnvironmentVariables()
+	proxy := httputil.NewSingleHostReverseProxy(c.proxyURL)
 	proxy.Director = func(r *http.Request) {
-		r.Host = proxyURL.Host
+		r.Host = c.proxyURL.Host
 		r.URL.Host = r.Host
-		r.URL.Scheme = proxyURL.Scheme
+		r.URL.Scheme = c.proxyURL.Scheme
 	}
 	http.Handle("/", alice.New(wrapper).Then(proxy))
-	http.HandleFunc("/version", ver)
 
 	// Listen & Serve
-	port := "80"
-	if env := os.Getenv("APP_PORT"); len(env) > 0 {
-		port = env
+	log.Printf("[service] listening on port %s", c.port)
+	if (len(c.sslCert) > 0) && (len(c.sslKey) > 0) {
+		log.Fatal(http.ListenAndServeTLS(":"+c.port, c.sslCert, c.sslKey, nil))
+	} else {
+		log.Fatal(http.ListenAndServe(":"+c.port, nil))
 	}
-	log.Printf("[service] listening on port %s", port)
-	http.ListenAndServe(":"+port, nil)
+}
+
+func configFromEnvironmentVariables() *config {
+	candidate := os.Getenv("PROXY_URL")
+	if len(candidate) == 0 {
+		log.Fatal("Missing required environment variable: PROXY_URL")
+	}
+	proxyURL, err := url.Parse(candidate)
+	if err != nil {
+		log.Fatalf("Could not parse proxy URL: %s", candidate)
+	}
+	port := os.Getenv("APP_PORT")
+	if len(port) == 0 {
+		port = "80"
+	}
+	conf := &config{
+		proxyURL:      proxyURL,
+		basicAuthUser: os.Getenv("BASIC_AUTH_USER"),
+		basicAuthPass: os.Getenv("BASIC_AUTH_PASS"),
+		port:          port,
+		sslCert:       os.Getenv("SSL_CERT_PATH"),
+		sslKey:        os.Getenv("SSL_KEY_PATH"),
+	}
+	// Proxy
+	log.Printf("[config] Proxy to %v", proxyURL)
+
+	// TLS pem files
+	if (len(conf.sslCert) > 0) && (len(conf.sslKey) > 0) {
+		log.Print("[config] TLS enabled.")
+	}
+	// Basic authentication
+	if (len(conf.basicAuthUser) > 0) && (len(conf.basicAuthPass) > 0) {
+		log.Printf("[config] Basic authentication: %s", conf.basicAuthUser)
+	}
+	return conf
 }
 
 func wrapper(h http.Handler) http.Handler {
-	// Basic authentication
-	user := os.Getenv("BASIC_AUTH_USER")
-	pass := os.Getenv("BASIC_AUTH_PASS")
-	if (len(user) > 0) && (len(pass) > 0) {
-		log.Printf("[config] Basic authentication: %s", user)
-	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if (len(user) > 0) && (len(pass) > 0) && !auth(r, user, pass) {
+		if (len(c.basicAuthUser) > 0) && (len(c.basicAuthPass) > 0) && !auth(r, c.basicAuthUser, c.basicAuthPass) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="REALM"`)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
@@ -71,16 +96,4 @@ func auth(r *http.Request, user, pass string) bool {
 		return username == user && password == pass
 	}
 	return false
-}
-
-func ver(w http.ResponseWriter, r *http.Request) {
-	if js, err := json.Marshal(struct {
-		Version string `json:"version"`
-		Date    string `json:"date"`
-	}{Version: version, Date: date}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
 }

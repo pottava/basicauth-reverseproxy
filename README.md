@@ -17,6 +17,8 @@ PROXY_URL                 | The URL to be proxied with this app.              | 
 BASIC_AUTH_USER           | User for basic authentication.                    | 
 BASIC_AUTH_PASS           | Password for basic authentication.                | 
 APP_PORT                  | The port number to be assigned for listening.     | 
+SSL_CERT_PATH             | TLS: cert.pem file path.                          | 
+SSL_KEY_PATH              | TLS: key.pem file path.                           | 
 
 ### 2. Run the application
 

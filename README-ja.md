@@ -17,6 +17,8 @@ PROXY_URL          | リバースプロキシ先の `URL`                       
 BASIC_AUTH_USER    | Basic 認証をかけるなら、その `ユーザー名`            | 
 BASIC_AUTH_PASS    | Basic 認証をかけるなら、その `パスワード`            | 
 APP_PORT           | このサービスが待機する `ポート番号` （デフォルト 80番） | 
+SSL_CERT_PATH      | TLS を有効にしたいなら、その `cert.pem` へのパス     | 
+SSL_KEY_PATH       | TLS を有効にしたいなら、その `key.pem` へのパス      | 
 
 ### 2. アプリを起動します
 
