@@ -24,5 +24,26 @@ SSL_KEY_PATH       | TLS を有効にしたいなら、その `key.pem` への�
 
 `docker run -d -p 8080:80 -e PROXY_URL pottava/proxy`
 
-Basic 認証をつけるなら:  
+* Basic 認証をつけるなら:  
+
 `docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy`
+
+* TLS を有効にしたいなら:  
+
+`docker run -d -p 8080:80 -e PROXY_URL -e SSL_CERT_PATH -e SSL_KEY_PATH pottava/proxy`
+
+* docker-compose.yml として使うなら:  
+
+```
+proxy:
+  image: pottava/proxy
+  ports:
+    - 80:80
+  environment:
+    - PROXY_URL
+    - BASIC_AUTH_USER
+    - BASIC_AUTH_PASS
+    - SSL_CERT_PATH
+    - SSL_KEY_PATH
+  container_name: proxy
+```

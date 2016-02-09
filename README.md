@@ -25,8 +25,29 @@ SSL_KEY_PATH              | TLS: key.pem file path.                           |
 
 `docker run -d -p 8080:80 -e PROXY_URL pottava/proxy`
 
-with basic auth:  
+* with basic auth:  
+
 `docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy`
+
+* with TLS:  
+
+`docker run -d -p 8080:80 -e PROXY_URL -e SSL_CERT_PATH -e SSL_KEY_PATH pottava/proxy`
+
+* with docker-compose.yml:  
+
+```
+proxy:
+  image: pottava/proxy
+  ports:
+    - 80:80
+  environment:
+    - PROXY_URL
+    - BASIC_AUTH_USER
+    - BASIC_AUTH_PASS
+    - SSL_CERT_PATH
+    - SSL_KEY_PATH
+  container_name: proxy
+```
 
 
 ## Copyright and license
