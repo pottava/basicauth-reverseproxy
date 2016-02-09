@@ -1,0 +1,24 @@
+# docker-compose -f docker-compose-godep.yml run save
+# docker-compose -f docker-compose-godep.yml run update
+# docker-compose -f docker-compose-godep.yml run restore
+
+save:
+  image: pottava/godep:go1.5
+  command: save ./...
+  volumes:
+    - $GOPATH/src:/go/src
+  working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
+
+update:
+  image: pottava/godep:go1.5
+  command: update github.com/...
+  volumes:
+    - $GOPATH/src:/go/src
+  working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
+
+restore:
+  image: pottava/godep:go1.5
+  command: restore
+  volumes:
+    - $GOPATH/src:/go/src
+  working_dir: /go/src/github.com/pottava/basicauth-reverseproxy

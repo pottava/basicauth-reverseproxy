@@ -1,0 +1,13 @@
+{
+	"ImportPath": "github.com/pottava/basicauth-reverseproxy",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/justinas/alice",
+			"Rev": "2ac31ddd090e634eeabd598d1066a9a3e4a58a9f"
+		}
+	]
+}
