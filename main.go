@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/justinas/alice"
 )
@@ -15,6 +16,7 @@ type config struct {
 	basicAuthUser string   // BASIC_AUTH_USER
 	basicAuthPass string   // BASIC_AUTH_PASS
 	port          string   // APP_PORT
+	accessLog     bool     // ACCESS_LOG
 	sslCert       string   // SSL_CERT_PATH
 	sslKey        string   // SSL_KEY_PATH
 }
@@ -57,11 +59,18 @@ func configFromEnvironmentVariables() *config {
 	if len(port) == 0 {
 		port = "80"
 	}
+	accessLog := false
+	if candidate, found := os.LookupEnv("ACCESS_LOG"); found {
+		if b, err := strconv.ParseBool(candidate); err == nil {
+			accessLog = b
+		}
+	}
 	conf := &config{
 		proxyURL:      proxyURL,
 		basicAuthUser: os.Getenv("BASIC_AUTH_USER"),
 		basicAuthPass: os.Getenv("BASIC_AUTH_PASS"),
 		port:          port,
+		accessLog:     accessLog,
 		sslCert:       os.Getenv("SSL_CERT_PATH"),
 		sslKey:        os.Getenv("SSL_KEY_PATH"),
 	}
@@ -87,7 +96,9 @@ func wrapper(h http.Handler) http.Handler {
 			return
 		}
 		h.ServeHTTP(w, r)
-		log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+		if c.accessLog {
+			log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+		}
 	})
 }
 

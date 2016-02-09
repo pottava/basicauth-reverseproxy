@@ -19,6 +19,7 @@ BASIC_AUTH_PASS    | Basic 認証をかけるなら、その `パスワード`  
 APP_PORT           | このサービスが待機する `ポート番号` （デフォルト 80番） | 
 SSL_CERT_PATH      | TLS を有効にしたいなら、その `cert.pem` へのパス     | 
 SSL_KEY_PATH       | TLS を有効にしたいなら、その `key.pem` へのパス      | 
+ACCESS_LOG         | 標準出力へアクセスログを送る (初期値: false)          | 
 
 ### 2. アプリを起動します
 
@@ -39,11 +40,12 @@ proxy:
   image: pottava/proxy
   ports:
     - 80:80
+  links:
+    - web
   environment:
-    - PROXY_URL
-    - BASIC_AUTH_USER
-    - BASIC_AUTH_PASS
-    - SSL_CERT_PATH
-    - SSL_KEY_PATH
+    - PROXY_URL=http://web/
+    - BASIC_AUTH_USER=admin
+    - BASIC_AUTH_PASS=password
+    - ACCESS_LOG=true
   container_name: proxy
 ```

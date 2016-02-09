@@ -20,6 +20,7 @@ BASIC_AUTH_PASS           | Password for basic authentication.                |
 APP_PORT                  | The port number to be assigned for listening.     | 
 SSL_CERT_PATH             | TLS: cert.pem file path.                          | 
 SSL_KEY_PATH              | TLS: key.pem file path.                           | 
+ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) | 
 
 ### 2. Run the application
 
@@ -40,12 +41,13 @@ proxy:
   image: pottava/proxy
   ports:
     - 80:80
+  links:
+    - web
   environment:
-    - PROXY_URL
-    - BASIC_AUTH_USER
-    - BASIC_AUTH_PASS
-    - SSL_CERT_PATH
-    - SSL_KEY_PATH
+    - PROXY_URL=http://web/
+    - BASIC_AUTH_USER=admin
+    - BASIC_AUTH_PASS=password
+    - ACCESS_LOG=true
   container_name: proxy
 ```
 
