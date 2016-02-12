@@ -16,11 +16,10 @@ ENV GOLANG_VERSION=1.4.3 \
 RUN set -x \
     && apk add --no-cache --virtual build-dependencies \
         bash \
-        ca-certificates \
         gcc \
         musl-dev \
-        openssl \
         git \
+    && apk add --no-cache ca-certificates \
     && wget -q "$GOLANG_SRC_URL" -O golang.tar.gz \
     && echo "$GOLANG_SRC_SHA1  golang.tar.gz" | sha1sum -c - \
     && tar -C /usr/local -xzf golang.tar.gz \
@@ -31,7 +30,7 @@ RUN set -x \
     && chmod -R 777 "$GOPATH" \
     && go get -u github.com/pottava/basicauth-reverseproxy \
     && apk del --purge build-dependencies \
-    && rm -rf /go/pkg /go/src /usr/local/go /etc/ssl
+    && rm -rf /go/pkg /go/src /usr/local/go
 
 EXPOSE 80
 

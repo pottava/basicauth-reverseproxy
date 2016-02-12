@@ -1,6 +1,6 @@
-# docker-compose -f docker-compose-godep.yml run save
-# docker-compose -f docker-compose-godep.yml run update
-# docker-compose -f docker-compose-godep.yml run restore
+# docker-compose -f dev/docker-compose-godep.yml run save
+# docker-compose -f dev/docker-compose-godep.yml run update
+# docker-compose -f dev/docker-compose-godep.yml run restore
 
 save:
   image: pottava/godep:go1.5

@@ -1,14 +1,19 @@
-app:
-  build: .
-  command: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
-  ports:
-    - 8080:80
-  volumes:
-    - .:/go/src/github.com/pottava/basicauth-reverseproxy
-  environment:
-    - PROXY_URL
-    - BASIC_AUTH_USER
-    - BASIC_AUTH_PASS
-    - SSL_CERT_PATH
-    - SSL_KEY_PATH
-  container_name: app
+version: "2"
+
+services:
+  app:
+    image: pottava/godep:go1.5
+    command: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
+    ports:
+      - 8080:80
+    volumes:
+      - .:/go/src/github.com/pottava/basicauth-reverseproxy
+    working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
+    environment:
+      - PROXY_URL
+      - BASIC_AUTH_USER
+      - BASIC_AUTH_PASS
+      - SSL_CERT_PATH
+      - SSL_KEY_PATH
+      - ACCESS_LOG=true
+    container_name: app

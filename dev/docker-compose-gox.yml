@@ -1,6 +1,6 @@
 # export BUILD_VERSION=v0.1.0
 # export BUILD_DATE=2016-02-09T12:00:00+0900
-# docker-compose -f docker-compose-gox.yml run build
+# docker-compose -f dev/docker-compose-gox.yml run build
 
 build:
   image: pottava/gox:go1.5
