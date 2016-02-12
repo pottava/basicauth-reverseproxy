@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -36,6 +37,12 @@ func main() {
 		r.URL.Scheme = c.proxyURL.Scheme
 	}
 	http.Handle("/", alice.New(wrapper).Then(proxy))
+	http.HandleFunc("/--version", func(w http.ResponseWriter, r *http.Request) {
+		if len(version) > 0 && len(date) > 0 {
+			fmt.Fprintf(w, "version: %s (built at %s)", version, date)
+		}
+		w.WriteHeader(http.StatusOK)
+	})
 
 	// Listen & Serve
 	log.Printf("[service] listening on port %s", c.port)

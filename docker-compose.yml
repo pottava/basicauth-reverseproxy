@@ -10,6 +10,7 @@ services:
       - .:/go/src/github.com/pottava/basicauth-reverseproxy
     working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
     environment:
+      - GO15VENDOREXPERIMENT=1
       - PROXY_URL
       - BASIC_AUTH_USER
       - BASIC_AUTH_PASS

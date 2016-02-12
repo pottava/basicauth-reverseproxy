@@ -5,6 +5,8 @@
 save:
   image: pottava/godep:go1.5
   command: save ./...
+  environment:
+    - GO15VENDOREXPERIMENT=1
   volumes:
     - $GOPATH/src:/go/src
   working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
@@ -12,6 +14,8 @@ save:
 update:
   image: pottava/godep:go1.5
   command: update github.com/...
+  environment:
+    - GO15VENDOREXPERIMENT=1
   volumes:
     - $GOPATH/src:/go/src
   working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
@@ -19,6 +23,8 @@ update:
 restore:
   image: pottava/godep:go1.5
   command: restore
+  environment:
+    - GO15VENDOREXPERIMENT=1
   volumes:
     - $GOPATH/src:/go/src
   working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
