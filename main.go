@@ -8,8 +8,6 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-
-	"github.com/justinas/alice"
 )
 
 type config struct {
@@ -36,7 +34,8 @@ func main() {
 		r.URL.Host = r.Host
 		r.URL.Scheme = c.proxyURL.Scheme
 	}
-	http.Handle("/", alice.New(wrapper).Then(proxy))
+	http.Handle("/", wrapper(proxy))
+
 	http.HandleFunc("/--version", func(w http.ResponseWriter, r *http.Request) {
 		if len(version) > 0 && len(date) > 0 {
 			fmt.Fprintf(w, "version: %s (built at %s)", version, date)

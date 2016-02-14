@@ -2,15 +2,13 @@ version: "2"
 
 services:
   app:
-    image: pottava/godep:go1.5
+    image: pottava/golang:1.5
     command: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
     ports:
       - 8080:80
     volumes:
       - .:/go/src/github.com/pottava/basicauth-reverseproxy
-    working_dir: /go/src/github.com/pottava/basicauth-reverseproxy
     environment:
-      - GO15VENDOREXPERIMENT=1
       - PROXY_URL
       - BASIC_AUTH_USER
       - BASIC_AUTH_PASS

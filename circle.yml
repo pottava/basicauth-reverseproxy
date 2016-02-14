@@ -1,6 +1,5 @@
 machine:
   environment:
-    GO15VENDOREXPERIMENT: 1
     REPO_ROOT: "${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
     CHECKOUT_PATH: ${HOME}/${CIRCLE_PROJECT_REPONAME}
   post:
@@ -10,7 +9,6 @@ machine:
 
 dependencies:
   pre:
-    - go get -u github.com/tools/godep
     - go get -u github.com/golang/lint/golint
 
 checkout:
@@ -19,13 +17,11 @@ checkout:
     - cp -rf ${CHECKOUT_PATH} ${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME}/
 
 test:
-  pre:
-    - cd ${REPO_ROOT} && godep restore
   override:
     - cd ${REPO_ROOT} && for package in `go list ./...| grep -v vendor`; do golint ${package}; done
     - cd ${REPO_ROOT} && test -z "$(gofmt -s -l . | tee /dev/stderr)"
     - cd ${REPO_ROOT} && go vet ./...
-    - cd ${REPO_ROOT} && godep go test -cover -bench -benchmem `go list ./... | grep -v /vendor/` -v
+    - cd ${REPO_ROOT} && go test -cover -bench -benchmem `go list ./... | grep -v /vendor/` -v
 
 deployment:
   release:
