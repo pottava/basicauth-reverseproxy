@@ -1,6 +1,11 @@
 # Reverse proxy w/ basic authentication
 
+[![](https://badge.imagelayers.io/pottava/proxy:latest.svg)](https://imagelayers.io/?images=pottava/proxy:latest 'Get your own badge on imagelayers.io')
+
 ![circleci status](https://circleci.com/gh/pottava/basicauth-reverseproxy.svg?style=shield&circle-token=e15e15a99a3ad48806369829ab87e447aed7fbe7)
+
+Supported tags and respective `Dockerfile` links:
+・latest ([prod/1.5/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/1.5/Dockerfile))
 
 ## Description
 
