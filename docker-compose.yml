@@ -2,17 +2,30 @@ version: "2"
 
 services:
   app:
-    image: pottava/golang:1.5
+    image: pottava/golang:1.6
     command: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
     ports:
-      - 8080:80
+      - 80:80
     volumes:
       - .:/go/src/github.com/pottava/basicauth-reverseproxy
     environment:
-      - PROXY_URL
+      - PROXY_PATTERNS="/.well-known/=http://aa/,localhost=http://bb/,*=http://cc/"
+      # - PROXY_URL=http:/cc/
       - BASIC_AUTH_USER
       - BASIC_AUTH_PASS
       - SSL_CERT_PATH
       - SSL_KEY_PATH
       - ACCESS_LOG=true
     container_name: app
+
+  a:
+    image: dockercloud/hello-world
+    container_name: aa
+
+  b:
+    image: dockercloud/hello-world
+    container_name: bb
+
+  c:
+    image: dockercloud/hello-world
+    container_name: cc

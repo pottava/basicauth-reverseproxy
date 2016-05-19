@@ -18,8 +18,9 @@ This is a reverse proxy, which is able to provide basic authentication as well.
 ### 1. Set environment variables
 
 Environment Variables     | Description                                       | Required
-------------------------- | ------------------------------------------------- | ---------
-PROXY_URL                 | The URL to be proxied with this app.              | *
+------------------------- | ------------------------------------------------- | ---------------------
+PROXY_PATTERNS            | Both virtual host & virtual path can be specified.| * (or PROXY_URL)
+PROXY_URL                 | The URL to be proxied with this app.              | * (or PROXY_PATTERNS)
 BASIC_AUTH_USER           | User for basic authentication.                    | 
 BASIC_AUTH_PASS           | Password for basic authentication.                | 
 APP_PORT                  | The port number to be assigned for listening.     | 
@@ -29,15 +30,20 @@ ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) |
 
 ### 2. Run the application
 
-`docker run -d -p 8080:80 -e PROXY_URL pottava/proxy`
+`$ docker run -d -p 8080:80 -e PROXY_URL pottava/proxy`
 
 * with basic auth:  
 
-`docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy`
+`$ docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy`
 
 * with TLS:  
 
-`docker run -d -p 8080:80 -e PROXY_URL -e SSL_CERT_PATH -e SSL_KEY_PATH pottava/proxy`
+`$ docker run -d -p 8080:80 -e PROXY_URL -e SSL_CERT_PATH -e SSL_KEY_PATH pottava/proxy`
+
+* with virtual hosts:  
+
+`$ export PROXY_PATTERNS="/static=http://assets.cdn/,*.example.com=http://app.io/,*=http://sorry.com/"`  
+`$ docker run -d -p 8080:80 -e PROXY_PATTERNS pottava/proxy`
 
 * with docker-compose.yml:  
 
@@ -53,6 +59,22 @@ proxy:
     - BASIC_AUTH_USER=admin
     - BASIC_AUTH_PASS=password
     - ACCESS_LOG=true
+  container_name: proxy
+```
+
+* with docker-compose.yml (virtual hosts & SSL/TLS):  
+
+```
+proxy:
+  image: pottava/proxy
+  ports:
+    - 443:80
+  links:
+    - web
+  environment:
+    - PROXY_PATTERNS="/static=http://assets.cdn/,*.example.com=http://app.io/,*=http://sorry.com/"
+    - SSL_CERT_PATH
+    - SSL_KEY_PATH
   container_name: proxy
 ```
 
