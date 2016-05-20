@@ -5,7 +5,7 @@
 ![circleci status](https://circleci.com/gh/pottava/basicauth-reverseproxy.svg?style=shield&circle-token=e15e15a99a3ad48806369829ab87e447aed7fbe7)
 
 Supported tags and respective `Dockerfile` links:  
-・latest ([prod/1.5/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/1.5/Dockerfile))
+・latest ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))
 
 ## Description
 
@@ -73,8 +73,10 @@ proxy:
     - web
   environment:
     - PROXY_PATTERNS="/static=http://assets.cdn/,*.example.com=http://app.io/,*=http://sorry.com/"
-    - SSL_CERT_PATH
-    - SSL_KEY_PATH
+    - SSL_CERT_PATH=/etc/certs/cert.pem
+    - SSL_KEY_PATH=/etc/certs/key.pem
+  volumes:
+    - ./certs:/etc/certs
   container_name: proxy
 ```
 

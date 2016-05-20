@@ -67,7 +67,9 @@ proxy:
     - web
   environment:
     - PROXY_PATTERNS="/static=http://assets.cdn/,*.example.com=http://app.io/,*=http://sorry.com/"
-    - SSL_CERT_PATH
-    - SSL_KEY_PATH
+    - SSL_CERT_PATH=/etc/certs/cert.pem
+    - SSL_KEY_PATH=/etc/certs/key.pem
+  volumes:
+    - ./certs:/etc/certs
   container_name: proxy
 ```
