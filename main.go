@@ -46,15 +46,17 @@ func main() {
 			if match(patterns.matches[0], r.URL.Scheme, false) &&
 				match(patterns.matches[1], r.Host, false) &&
 				match(patterns.matches[3], r.URL.Path, true) {
+				r.Host = patterns.proxyURL.Host
+				r.URL.Host = r.Host
 				r.URL.Scheme = patterns.proxyURL.Scheme
-				r.URL.Host = patterns.proxyURL.Host
 				found = true
 				break
 			}
 		}
 		if !found {
+			r.Host = c.proxyURL.Host
+			r.URL.Host = r.Host
 			r.URL.Scheme = c.proxyURL.Scheme
-			r.URL.Host = c.proxyURL.Host
 		}
 	}
 	http.Handle("/", wrapper(proxy))
