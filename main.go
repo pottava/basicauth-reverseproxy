@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -39,36 +38,29 @@ func main() {
 	c = configFromEnvironmentVariables()
 
 	// Proxy!!
-	dummy, _ := url.Parse("https://www.docker.com/")
-	proxy := httputil.NewSingleHostReverseProxy(dummy)
-	proxy.Director = func(r *http.Request) {
-		r.Header.Set("Host", r.Host)
+	http.Handle("/", wrapper(&httputil.ReverseProxy{
+		Director: func(r *http.Request) {
+			r.Header.Set("X-Forwarded-Host", r.Host)
 
-		found := false
-		for _, patterns := range c.ProxyPatterns {
-			if match(patterns.matches[0], r.URL.Scheme, false) &&
-				match(patterns.matches[1], r.Host, false) &&
-				match(patterns.matches[3], r.URL.Path, true) {
-				r.Host = patterns.proxyURL.Host
+			found := false
+			for _, patterns := range c.ProxyPatterns {
+				if match(patterns.matches[0], r.URL.Scheme, false) &&
+					match(patterns.matches[1], r.Host, false) &&
+					match(patterns.matches[3], r.URL.Path, true) {
+					r.Host = patterns.proxyURL.Host
+					r.URL.Host = r.Host
+					r.URL.Scheme = patterns.proxyURL.Scheme
+					found = true
+					break
+				}
+			}
+			if !found {
+				r.Host = c.proxyURL.Host
 				r.URL.Host = r.Host
-				r.URL.Scheme = patterns.proxyURL.Scheme
-				found = true
-				break
+				r.URL.Scheme = c.proxyURL.Scheme
 			}
-		}
-		if !found {
-			r.Host = c.proxyURL.Host
-			r.URL.Host = r.Host
-			r.URL.Scheme = c.proxyURL.Scheme
-		}
-		if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
-			if prior, ok := r.Header["X-Forwarded-For"]; ok {
-				ip = strings.Join(prior, ", ") + ", " + ip
-			}
-			r.Header.Set("X-Forwarded-For", ip)
-		}
-	}
-	http.Handle("/", wrapper(proxy))
+		},
+	}))
 
 	http.HandleFunc("/--version", func(w http.ResponseWriter, r *http.Request) {
 		if len(version) > 0 && len(date) > 0 {
