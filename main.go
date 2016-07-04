@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -41,6 +42,8 @@ func main() {
 	dummy, _ := url.Parse("https://www.docker.com/")
 	proxy := httputil.NewSingleHostReverseProxy(dummy)
 	proxy.Director = func(r *http.Request) {
+		r.Header.Set("Host", r.Host)
+
 		found := false
 		for _, patterns := range c.ProxyPatterns {
 			if match(patterns.matches[0], r.URL.Scheme, false) &&
@@ -57,6 +60,12 @@ func main() {
 			r.Host = c.proxyURL.Host
 			r.URL.Host = r.Host
 			r.URL.Scheme = c.proxyURL.Scheme
+		}
+		if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+			if prior, ok := r.Header["X-Forwarded-For"]; ok {
+				ip = strings.Join(prior, ", ") + ", " + ip
+			}
+			r.Header.Set("X-Forwarded-For", ip)
 		}
 	}
 	http.Handle("/", wrapper(proxy))
