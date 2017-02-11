@@ -14,7 +14,7 @@ RUN apk add --no-cache ca-certificates \
       && mkdir -p /go/src /go/bin \
       && chmod -R 777 /go \
       && go get -u github.com/pottava/basicauth-reverseproxy \
-      && apk del --purge build-dependencies \
+      && apk del --purge -r build-dependencies \
       && rm -rf /go/pkg /go/src
 
 EXPOSE 80
