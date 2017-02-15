@@ -26,6 +26,10 @@ BASIC_AUTH_PASS           | Password for basic authentication.                |
 APP_PORT                  | The port number to be assigned for listening.     | 
 SSL_CERT_PATH             | TLS: cert.pem file path.                          | 
 SSL_KEY_PATH              | TLS: key.pem file path.                           | 
+CORS_ALLOW_ORIGIN         | CORS: a URI that may access the resource.         | 
+CORS_ALLOW_METHODS        | CORS: Comma-delimited list of the allowed [HTTP request methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html). | 
+CORS_ALLOW_HEADERS        | CORS: Comma-delimited list of the supported request headers. | 
+CORS_MAX_AGE              | CORS: Maximum number of seconds the results of a preflight request can be cached. | 
 ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) | 
 
 ### 2. Run the application
@@ -39,6 +43,10 @@ ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) |
 * with TLS:  
 
 `$ docker run -d -p 8080:80 -e PROXY_URL -e SSL_CERT_PATH -e SSL_KEY_PATH pottava/proxy`
+
+* with CORS:
+
+`$ docker run -d -p 8080:80 -e PROXY_URL -e CORS_ALLOW_ORIGIN -e CORS_ALLOW_METHODS -e CORS_ALLOW_HEADERS -e CORS_MAX_AGE pottava/proxy`
 
 * with virtual hosts:  
 
