@@ -20,6 +20,10 @@ BASIC_AUTH_PASS    | Basic 認証をかけるなら、その `パスワード`  
 APP_PORT           | このサービスが待機する `ポート番号` （デフォルト 80番） | 
 SSL_CERT_PATH      | TLS を有効にしたいなら、その `cert.pem` へのパス     | 
 SSL_KEY_PATH       | TLS を有効にしたいなら、その `key.pem` へのパス      | 
+CORS_ALLOW_ORIGIN  | CORS を有効にしたいなら、リソースへのアクセスを許可する URI. | 
+CORS_ALLOW_METHODS | CORS を有効にしたいなら、許可する [HTTP request methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html)のカンマ区切りのリスト. | 
+CORS_ALLOW_HEADERS | CORS を有効にしたいなら、サポートするヘッダーのカンマ区切りのリスト. | 
+CORS_MAX_AGE       | CORS における preflight リクエスト結果のキャッシュ上限時間(秒). (デフォルト 600秒) | 
 ACCESS_LOG         | 標準出力へアクセスログを送る (初期値: false)          | 
 
 ### 2. アプリを起動します
@@ -33,6 +37,10 @@ ACCESS_LOG         | 標準出力へアクセスログを送る (初期値: fals
 * TLS を有効にしたいなら:  
 
 `$ docker run -d -p 8080:80 -e PROXY_URL -e SSL_CERT_PATH -e SSL_KEY_PATH pottava/proxy`
+
+* CORS を有効にしたいなら:
+
+`$ docker run -d -p 8080:80 -e PROXY_URL -e CORS_ALLOW_ORIGIN -e CORS_ALLOW_METHODS -e CORS_ALLOW_HEADERS -e CORS_MAX_AGE pottava/proxy`
 
 * 仮想ホストでのリバースプロキシ:
 
