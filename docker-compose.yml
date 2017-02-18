@@ -2,7 +2,8 @@ version: "2"
 
 services:
   app:
-    image: pottava/golang:1.8
+    build: dev/
+    image: basicauth-reverseproxy:dev
     command: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
     ports:
       - 80:80
@@ -20,12 +21,18 @@ services:
 
   a:
     image: dockercloud/hello-world
+    environment:
+      - NAME=aa
     container_name: aa
 
   b:
     image: dockercloud/hello-world
+    environment:
+      - NAME=bb
     container_name: bb
 
   c:
     image: dockercloud/hello-world
+    environment:
+      - NAME=cc
     container_name: cc
