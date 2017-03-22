@@ -26,7 +26,7 @@ RUN apk --no-cache add --virtual build-dependencies bash gcc musl-dev openssl go
     && mkdir -p /go/src /go/bin \
     && chmod -R 777 /go \
 
-    # Compile s3-proxy
+    # Compile basicauth-reverseproxy
     && go get -u github.com/pottava/basicauth-reverseproxy \
     && mv /go/bin/basicauth-reverseproxy /usr/bin \
 
