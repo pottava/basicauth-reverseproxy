@@ -17,6 +17,7 @@ services:
       - SSL_CERT_PATH
       - SSL_KEY_PATH
       - ACCESS_LOG=true
+      - CONTENT_ENCODING
     container_name: app
 
   a:

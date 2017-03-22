@@ -1,7 +1,10 @@
 package main
 
 import (
+	"compress/gzip"
+	"compress/zlib"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -10,6 +13,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type proxyPattern struct {
@@ -26,6 +30,7 @@ type config struct {
 	accessLog        bool     // ACCESS_LOG
 	sslCert          string   // SSL_CERT_PATH
 	sslKey           string   // SSL_KEY_PATH
+	contentEncoding  bool     // CONTENT_ENCODING
 	corsAllowOrigin  string   // CORS_ALLOW_ORIGIN
 	corsAllowMethods string   // CORS_ALLOW_METHODS
 	corsAllowHeaders string   // CORS_ALLOW_HEADERS
@@ -131,6 +136,10 @@ func configFromEnvironmentVariables() *config {
 	if b, err := strconv.ParseBool(os.Getenv("ACCESS_LOG")); err == nil {
 		accessLog = b
 	}
+	contentEncoging := false
+	if b, err := strconv.ParseBool(os.Getenv("CONTENT_ENCODING")); err == nil {
+		contentEncoging = b
+	}
 	corsMaxAge := int64(600)
 	if i, err := strconv.ParseInt(os.Getenv("CORS_MAX_AGE"), 10, 64); err == nil {
 		corsMaxAge = i
@@ -144,6 +153,7 @@ func configFromEnvironmentVariables() *config {
 		accessLog:        accessLog,
 		sslCert:          os.Getenv("SSL_CERT_PATH"),
 		sslKey:           os.Getenv("SSL_KEY_PATH"),
+		contentEncoding:  contentEncoging,
 		corsAllowOrigin:  os.Getenv("CORS_ALLOW_ORIGIN"),
 		corsAllowMethods: os.Getenv("CORS_ALLOW_METHODS"),
 		corsAllowHeaders: os.Getenv("CORS_ALLOW_HEADERS"),
@@ -164,6 +174,24 @@ func configFromEnvironmentVariables() *config {
 	return conf
 }
 
+type custom struct {
+	io.Writer
+	http.ResponseWriter
+	status int
+}
+
+func (r *custom) Write(b []byte) (int, error) {
+	if r.Header().Get("Content-Type") == "" {
+		r.Header().Set("Content-Type", http.DetectContentType(b))
+	}
+	return r.Writer.Write(b)
+}
+
+func (r *custom) WriteHeader(status int) {
+	r.ResponseWriter.WriteHeader(status)
+	r.status = status
+}
+
 func wrapper(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if (len(c.corsAllowOrigin) > 0) && (len(c.corsAllowMethods) > 0) && (len(c.corsAllowHeaders) > 0) && (c.corsMaxAge > 0) {
@@ -177,11 +205,58 @@ func wrapper(h http.Handler) http.Handler {
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
-		h.ServeHTTP(w, r)
+		proc := time.Now()
+		addr := r.RemoteAddr
+		if ip, found := header(r, "X-Forwarded-For"); found {
+			addr = ip
+		}
+		ioWriter := w.(io.Writer)
+		if encodings, found := header(r, "Accept-Encoding"); found && c.contentEncoding {
+			for _, encoding := range splitCsvLine(encodings) {
+				if encoding == "gzip" {
+					w.Header().Set("Content-Encoding", "gzip")
+					g := gzip.NewWriter(w)
+					defer g.Close()
+					ioWriter = g
+					break
+				}
+				if encoding == "deflate" {
+					w.Header().Set("Content-Encoding", "deflate")
+					z := zlib.NewWriter(w)
+					defer z.Close()
+					ioWriter = z
+					break
+				}
+			}
+		}
+		writer := &custom{Writer: ioWriter, ResponseWriter: w, status: http.StatusOK}
+		h.ServeHTTP(writer, r)
+
 		if c.accessLog {
-			log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+			log.Printf("[%s] %.3f %d %s %s",
+				addr, time.Now().Sub(proc).Seconds(),
+				writer.status, r.Method, r.URL)
 		}
 	})
+}
+
+func header(r *http.Request, key string) (string, bool) {
+	if r.Header == nil {
+		return "", false
+	}
+	if candidate := r.Header[key]; len(candidate) > 0 {
+		return candidate[0], true
+	}
+	return "", false
+}
+
+func splitCsvLine(data string) []string {
+	splitted := strings.SplitN(data, ",", -1)
+	parsed := make([]string, len(splitted))
+	for i, val := range splitted {
+		parsed[i] = strings.TrimSpace(val)
+	}
+	return parsed
 }
 
 func auth(r *http.Request, user, pass string) bool {

@@ -29,6 +29,7 @@ CORS_ALLOW_METHODS        | CORS: Comma-delimited list of the allowed [HTTP requ
 CORS_ALLOW_HEADERS        | CORS: Comma-delimited list of the supported request headers. | 
 CORS_MAX_AGE              | CORS: Maximum number of seconds the results of a preflight request can be cached. | 
 ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) | 
+CONTENT_ENCODING          | Compress response data if the request allows. (default: false) |
 
 ### 2. Run the application
 
