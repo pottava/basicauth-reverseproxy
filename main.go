@@ -35,6 +35,7 @@ type config struct {
 	corsAllowMethods string   // CORS_ALLOW_METHODS
 	corsAllowHeaders string   // CORS_ALLOW_HEADERS
 	corsMaxAge       int64    // CORS_MAX_AGE
+	healthCheckPath  string   // HEALTHCHECK_PATH
 }
 
 var (
@@ -70,6 +71,12 @@ func main() {
 			}
 		},
 	}))
+
+	if c.healthCheckPath != "" {
+		http.HandleFunc(c.healthCheckPath, func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+	}
 
 	http.HandleFunc("/--version", func(w http.ResponseWriter, r *http.Request) {
 		if len(version) > 0 && len(date) > 0 {
@@ -158,6 +165,7 @@ func configFromEnvironmentVariables() *config {
 		corsAllowMethods: os.Getenv("CORS_ALLOW_METHODS"),
 		corsAllowHeaders: os.Getenv("CORS_ALLOW_HEADERS"),
 		corsMaxAge:       corsMaxAge,
+		healthCheckPath:  os.Getenv("HEALTHCHECK_PATH"),
 	}
 	// TLS pem files
 	if (len(conf.sslCert) > 0) && (len(conf.sslKey) > 0) {

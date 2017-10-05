@@ -3,7 +3,9 @@
 ![circleci status](https://circleci.com/gh/pottava/basicauth-reverseproxy.svg?style=shield&circle-token=e15e15a99a3ad48806369829ab87e447aed7fbe7)
 
 Supported tags and respective `Dockerfile` links:  
-・latest ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))
+・latest ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))  
+・1.1 ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))  
+・1 ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))  
 
 ## Description
 
@@ -30,6 +32,7 @@ CORS_ALLOW_HEADERS        | CORS: Comma-delimited list of the supported request 
 CORS_MAX_AGE              | CORS: Maximum number of seconds the results of a preflight request can be cached. | 
 ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) | 
 CONTENT_ENCODING          | Compress response data if the request allows. (default: false) |
+HEALTHCHECK_PATH          | If it's specified, the path always returns 200 OK |
 
 ### 2. Run the application
 

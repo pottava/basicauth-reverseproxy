@@ -18,6 +18,7 @@ services:
       - SSL_KEY_PATH
       - ACCESS_LOG=true
       - CONTENT_ENCODING
+      - HEALTHCHECK_PATH
     container_name: app
 
   a:
