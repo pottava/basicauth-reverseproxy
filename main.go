@@ -36,6 +36,7 @@ type config struct {
 	corsAllowHeaders string   // CORS_ALLOW_HEADERS
 	corsMaxAge       int64    // CORS_MAX_AGE
 	healthCheckPath  string   // HEALTHCHECK_PATH
+	useForwardedHost bool     // USE_X_FORWARDED_HOST
 }
 
 var (
@@ -50,15 +51,20 @@ func main() {
 	// Proxy!!
 	http.Handle("/", wrapper(&httputil.ReverseProxy{
 		Director: func(r *http.Request) {
-			r.Header.Set("X-Forwarded-Host", r.Host)
-
+			if c.useForwardedHost {
+				r.Header.Set("X-Forwarded-Host", r.Host)
+			}
 			found := false
 			for _, patterns := range c.ProxyPatterns {
 				if match(patterns.matches[0], r.URL.Scheme, false) &&
 					match(patterns.matches[1], r.Host, false) &&
 					match(patterns.matches[3], r.URL.Path, true) {
-					r.Host = patterns.proxyURL.Host
-					r.URL.Host = r.Host
+					if c.useForwardedHost {
+						r.Host = patterns.proxyURL.Host
+						r.URL.Host = r.Host
+					} else {
+						r.URL.Host = patterns.proxyURL.Host
+					}
 					r.URL.Scheme = patterns.proxyURL.Scheme
 					found = true
 					break
@@ -151,6 +157,10 @@ func configFromEnvironmentVariables() *config {
 	if i, err := strconv.ParseInt(os.Getenv("CORS_MAX_AGE"), 10, 64); err == nil {
 		corsMaxAge = i
 	}
+	useForwardedHost := true
+	if b, err := strconv.ParseBool(os.Getenv("USE_X_FORWARDED_HOST")); err == nil {
+		useForwardedHost = b
+	}
 	conf := &config{
 		ProxyPatterns:    ProxyPatterns,
 		proxyURL:         proxyURL,
@@ -166,6 +176,7 @@ func configFromEnvironmentVariables() *config {
 		corsAllowHeaders: os.Getenv("CORS_ALLOW_HEADERS"),
 		corsMaxAge:       corsMaxAge,
 		healthCheckPath:  os.Getenv("HEALTHCHECK_PATH"),
+		useForwardedHost: useForwardedHost,
 	}
 	// TLS pem files
 	if (len(conf.sslCert) > 0) && (len(conf.sslKey) > 0) {

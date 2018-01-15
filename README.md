@@ -33,6 +33,7 @@ CORS_MAX_AGE              | CORS: Maximum number of seconds the results of a pre
 ACCESS_LOG                | Send access logs to /dev/stdout. (default: false) | 
 CONTENT_ENCODING          | Compress response data if the request allows. (default: false) |
 HEALTHCHECK_PATH          | If it's specified, the path always returns 200 OK |
+USE_X_FORWARDED_HOST      | Set original host to X-Forwarded-Host. (default: true) |
 
 ### 2. Run the application
 

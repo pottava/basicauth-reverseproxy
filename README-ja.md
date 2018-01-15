@@ -27,6 +27,7 @@ CORS_MAX_AGE       | CORS における preflight リクエスト結果のキャ�
 ACCESS_LOG         | 標準出力へアクセスログを送る (初期値: false)          | 
 CONTENT_ENCODING   | リクエストが許可して入ればレスポンスを圧縮します (初期値: false) |
 HEALTHCHECK_PATH   | 指定すると Basic 認証設定の有無などに依らず 200 OK を返します |
+USE_X_FORWARDED_HOST | Host 名は X-Forwarded-Host に格納してバックエンドに流します. (初期値: true) |
 
 ### 2. アプリを起動します
 
