@@ -6,11 +6,11 @@ services:
     image: basicauth-reverseproxy:dev
     command: go run /go/src/github.com/pottava/basicauth-reverseproxy/main.go
     ports:
-      - 80:80
+      - 8080:80
     volumes:
       - .:/go/src/github.com/pottava/basicauth-reverseproxy
     environment:
-      - PROXY_PATTERNS="/.well-known/=http://aa/,localhost=http://bb/,*=http://cc/"
+      - PROXY_PATTERNS="/app/envs=http://aa:8080/,localhost=http://bb:8080/,*=http://cc:8080/"
       # - PROXY_URL=http:/cc/
       - BASIC_AUTH_USER
       - BASIC_AUTH_PASS
@@ -22,19 +22,19 @@ services:
     container_name: app
 
   a:
-    image: dockercloud/hello-world
+    image: pottava/http-re:1.2
     environment:
       - NAME=aa
     container_name: aa
 
   b:
-    image: dockercloud/hello-world
+    image: pottava/http-re:1.2
     environment:
       - NAME=bb
     container_name: bb
 
   c:
-    image: dockercloud/hello-world
+    image: pottava/http-re:1.2
     environment:
       - NAME=cc
     container_name: cc
