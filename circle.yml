@@ -1,7 +1,7 @@
 version: 2
 jobs:
   test:
-    working_directory: /go/src/github.com/pottava/ecs-task-runner
+    working_directory: /go/src/github.com/pottava/basicauth-reverseproxy
     docker:
       - image: circleci/golang:1.11.4
     steps:
