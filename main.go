@@ -21,7 +21,7 @@ type proxyPattern struct {
 	proxyURL *url.URL
 }
 
-type config struct {
+type config struct { // nolint
 	ProxyPatterns    []proxyPattern
 	proxyURL         *url.URL // PROXY_URL
 	basicAuthUser    string   // BASIC_AUTH_USER
@@ -253,7 +253,7 @@ func wrapper(h http.Handler) http.Handler {
 
 		if c.accessLog {
 			log.Printf("[%s] %.3f %d %s %s",
-				addr, time.Now().Sub(proc).Seconds(),
+				addr, time.Since(proc).Seconds(),
 				writer.status, r.Method, r.URL)
 		}
 	})
