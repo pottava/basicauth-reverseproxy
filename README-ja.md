@@ -1,5 +1,6 @@
 # Basic 認証も可能なリバースプロキシ
 
+[![pottava/proxy](http://dockeri.co/image/pottava/proxy)](https://hub.docker.com/r/pottava/proxy/)
 
 ## 概要
 

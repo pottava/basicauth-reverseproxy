@@ -2,6 +2,8 @@
 
 ![circleci status](https://circleci.com/gh/pottava/basicauth-reverseproxy.svg?style=shield&circle-token=e15e15a99a3ad48806369829ab87e447aed7fbe7)
 
+[![pottava/proxy](http://dockeri.co/image/pottava/proxy)](https://hub.docker.com/r/pottava/proxy/)
+
 Supported tags and respective `Dockerfile` links:  
 ・latest ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))  
 ・1.1 ([prod/Dockerfile](https://github.com/pottava/basicauth-reverseproxy/blob/master/prod/Dockerfile))  
@@ -11,7 +13,6 @@ Supported tags and respective `Dockerfile` links:
 
 This is a reverse proxy, which is able to provide basic authentication as well.  
 ([日本語はこちら](https://github.com/pottava/basicauth-reverseproxy/blob/master/README-ja.md))
-
 
 ## Usage
 
@@ -90,7 +91,6 @@ proxy:
     - ./certs:/etc/certs
   container_name: proxy
 ```
-
 
 ## Copyright and license
 
