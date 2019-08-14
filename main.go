@@ -149,9 +149,9 @@ func configFromEnvironmentVariables() *config {
 	if b, err := strconv.ParseBool(os.Getenv("ACCESS_LOG")); err == nil {
 		accessLog = b
 	}
-	contentEncoging := false
+	contentEncoding := false
 	if b, err := strconv.ParseBool(os.Getenv("CONTENT_ENCODING")); err == nil {
-		contentEncoging = b
+		contentEncoding = b
 	}
 	corsMaxAge := int64(600)
 	if i, err := strconv.ParseInt(os.Getenv("CORS_MAX_AGE"), 10, 64); err == nil {
@@ -170,7 +170,7 @@ func configFromEnvironmentVariables() *config {
 		accessLog:        accessLog,
 		sslCert:          os.Getenv("SSL_CERT_PATH"),
 		sslKey:           os.Getenv("SSL_KEY_PATH"),
-		contentEncoding:  contentEncoging,
+		contentEncoding:  contentEncoding,
 		corsAllowOrigin:  os.Getenv("CORS_ALLOW_ORIGIN"),
 		corsAllowMethods: os.Getenv("CORS_ALLOW_METHODS"),
 		corsAllowHeaders: os.Getenv("CORS_ALLOW_HEADERS"),
