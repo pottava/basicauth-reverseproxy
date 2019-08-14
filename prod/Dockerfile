@@ -1,8 +1,4 @@
-FROM alpine:3.7
-
-LABEL com.github.pottava.application="basicauth-reverseproxy" \
-      com.github.pottava.usage="docker run -d -p 8080:80 -e PROXY_URL -e BASIC_AUTH_USER -e BASIC_AUTH_PASS pottava/proxy" \
-      com.github.pottava.license="MIT"
+FROM alpine:3.10
 
 ENV APP_PORT=80
 
