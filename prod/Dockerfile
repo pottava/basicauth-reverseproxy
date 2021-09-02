@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.13
 
 ENV APP_PORT=80
 
